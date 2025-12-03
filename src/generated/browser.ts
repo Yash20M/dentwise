@@ -31,9 +31,3 @@ export type Doctor = Prisma.DoctorModel
  * 
  */
 export type Appointment = Prisma.AppointmentModel
-
-
-
-
-
-
