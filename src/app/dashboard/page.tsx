@@ -1,8 +1,12 @@
+"use client"
+import Navbar from "@/components/Navbar"
 
-const page = () => {
+const DashboardPage = () => {
   return (
-    <div>page</div>
+   <>
+    <Navbar />
+   </>
   )
 }
 
-export default page
+export default DashboardPage
