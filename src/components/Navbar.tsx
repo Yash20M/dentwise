@@ -1,3 +1,4 @@
+"use client"
 import { UserButton, useUser } from "@clerk/nextjs"
 import { CalendarIcon, CrownIcon, HomeIcon, MicIcon } from "lucide-react"
 import Image from "next/image"
