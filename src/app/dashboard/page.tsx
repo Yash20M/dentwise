@@ -1,11 +1,19 @@
-"use client"
+import ActivityOverview from "@/components/dashboard/ActivityOverview"
+import MainActions from "@/components/dashboard/MainActions"
+import WelcomSection from "@/components/dashboard/WelcomSection"
 import Navbar from "@/components/Navbar"
 
 const DashboardPage = () => {
   return (
-   <>
-    <Navbar />
-   </>
+    <>
+      <Navbar />
+
+      <div className="max-w-7xl mx-auto  px-6 py-8 pt-24">
+        <WelcomSection />
+        <MainActions />
+        <ActivityOverview />
+      </div>
+    </>
   )
 }
 
