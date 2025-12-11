@@ -12,7 +12,6 @@ const ProPage = async () => {
     const { has } = await auth();
 
     const hasProPlan = has({ plan: "ai_basic" }) || has({ plan: "ai_pro" })
-    console.log("hasPlan", hasProPlan)
 
     return (
         <>
