@@ -1,5 +1,6 @@
 "use client"
 
+import { AppointmentConfirmationModal } from "@/components/appointments/AppointmentConfirmationModal";
 import BookingConfirmationStep from "@/components/appointments/BookingConfirmationStep";
 import DoctorSelectionStep from "@/components/appointments/DoctorSelectionStep";
 import ProgressSteps from "@/components/appointments/ProgressSteps";
@@ -47,9 +48,37 @@ const AppointmentPage = () => {
             reason: appointmentType?.name || "",
         }, {
             onSuccess: async (appointment) => {
+                console.log("check",appointment)
                 setBookedAppointment(appointment)
-                setShowConfirmationModal(true)
 
+                try {
+                    const emailResponse = await fetch("/api/send-appointment-email", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            userEmail: appointment.patientEmail,
+                            doctorName: appointment.doctorName,
+                            appointmentDate: format(new Date(appointment.date), "EEEE, MMMM d, yyyy"),
+                            appointmentTime: appointment.time,
+                            appointmentType: appointmentType?.name,
+                            duration: appointmentType?.duration,
+                            price: appointmentType?.price,
+                        })
+                    })
+
+                    console.log("emailResponse",emailResponse)
+                    if (!emailResponse.ok) console.error("Failed to send email")
+                }
+                catch (err: any) {
+                    console.log(err)
+                    toast.error(err.message)
+                }
+
+
+
+                setShowConfirmationModal(true)
                 setSelectedDate("")
                 setSelectedDentistId(null)
                 setSelectedTime("")
@@ -110,6 +139,21 @@ const AppointmentPage = () => {
                     />
                 )}
             </div>
+
+            {
+                bookedAppointment && (
+                    <AppointmentConfirmationModal
+                        open = {showConfirmationModal}
+                        onOpenChange={setShowConfirmationModal}
+                        appointmentDetails={{
+                            doctorName: bookedAppointment.doctorName,
+                            appointmentDate: format(new Date(bookedAppointment.date), "EEEE, MMMM d, yyyy"),
+                            appointmentTime: bookedAppointment.time,
+                            userEmail: bookedAppointment.patientEmail,
+                        }}
+                    />
+                )
+            }
 
             {
                 userAppointments.length > 0 && (
