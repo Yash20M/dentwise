@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "../prisma";
+import { AppointmentStatus } from "@/generated/enums";
 
 interface BookAppointmentInput {
     doctorId: string;
@@ -24,6 +25,11 @@ const transformApointment = (appointment: any) => {
 export async function getAppointments() {
     try {
         const appointments = await prisma.appointment.findMany({
+            where: {
+                status: {
+                    in: ["CONFIRMED", "COMPLETED"]
+                }
+            },
             include: {
                 user: {
                     select: {
@@ -43,7 +49,7 @@ export async function getAppointments() {
                 createdAt: "desc"
             }
         })
-        return appointments;
+        return appointments.map((app) => transformApointment(app))
     }
     catch (err) {
         console.log(err)
@@ -65,7 +71,12 @@ export async function getUserAppointmentStats() {
 
         const [totalCount, completeCount] = await Promise.all([
             prisma.appointment.count({
-                where: { userId: user.id }
+                where: { 
+                    userId: user.id,
+                    status: {
+                        in: ["CONFIRMED", "COMPLETED"]
+                    }
+                }
             }),
             prisma.appointment.count({
                 where: {
@@ -104,7 +115,12 @@ export async function getUserAppointments() {
         if (!user) throw new Error("User not found");
 
         const appointments = await prisma?.appointment.findMany({
-            where: { userId: user.id },
+            where: { 
+                userId: user.id,
+                status: {
+                    in: ["CONFIRMED", "COMPLETED"]
+                }
+            },
             include: {
                 user: { select: { firstName: true, lastName: true, email: true } },
                 doctor: {
@@ -184,5 +200,18 @@ export async function bookAppointment(input: BookAppointmentInput) {
     }
     catch (error) {
         console.log(error);
+    }
+}
+
+export async function updateAppointmentStatus(input: { id: string, status: AppointmentStatus }) {
+    try {
+        const appointment = await prisma.appointment.update({
+            where: { id: input.id },
+            data: { status: input.status }
+        })
+
+        return appointment
+    } catch (err) {
+        console.log(err);
     }
 }

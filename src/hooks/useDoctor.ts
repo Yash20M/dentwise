@@ -26,17 +26,20 @@ export function useUpdateDoctor() {
     const queryClient = useQueryClient();
     const result = useMutation({
         mutationFn: updateDoctor,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["getDoctors"] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["getDoctors"] }),
+                queryClient.invalidateQueries({ queryKey: ["getAvailableDoctors"] })
+        },
         onError: (err) => console.log(err)
     })
 
     return result;
 }
 
-export function useAvailableDoctors(){
+export function useAvailableDoctors() {
     const result = useQuery({
-        queryKey:["getAvailbaleDoctors"],
-        queryFn:getAvailableDoctors
+        queryKey: ["getAvailbaleDoctors"],
+        queryFn: getAvailableDoctors
     });
 
     return result;
